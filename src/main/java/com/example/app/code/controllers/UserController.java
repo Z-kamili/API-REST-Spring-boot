@@ -4,6 +4,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,11 +25,17 @@ public class UserController {
 	
 	
 	
-	@GetMapping
-	public String getUser() {
+	@GetMapping(path="/{id}")
+	public UserResponse getUser(@PathVariable String id){
 		
-		return "Hello world";
+	UserDto userDto = 	userService.getUserByUserId(id);
+	
+	UserResponse userResponse = new UserResponse();
+	
+	BeanUtils.copyProperties(userDto, userResponse);
 		
+	return userResponse;
+	
 	}
 	
 	
@@ -45,19 +52,25 @@ public class UserController {
 		
 	}
 	
-	@PutMapping
-	public String updateUser() {
+	@PutMapping(path="/{id}")
+	public UserResponse updateUser(@PathVariable String id,@RequestBody UserRequest userRequest) {
 		
-		return "update user was called";
+		UserDto userDto = new UserDto();
+		BeanUtils.copyProperties(userRequest, userDto);
+		//chef d'orchestre
+	    UserDto updateUser = userService.updateUser(id,userDto);
+	    UserResponse userResponse = new UserResponse();
+	    BeanUtils.copyProperties(updateUser,userResponse);
+	    return userResponse;
 		
 	}
 	
 	
-	@DeleteMapping
-	public String deleteUser() {
+	@DeleteMapping(path="/{id}")
+	public String deleteUser(@PathVariable String id) {
 		
-		return "delete user was called";
-		
+		userService.deleteUser(id);
+		return "";
 	}
 	
 	
